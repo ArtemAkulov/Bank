@@ -13,7 +13,7 @@ public class DepositIntoAccount extends JFrame
     public DepositIntoAccount(String accountNumber, String currentBalance, int accountID) throws SQLException
     {
         super("Make a deposit into the account number " + accountNumber);
-        setResizable(false);
+
         GroupLayout depositIntoAccountDialogLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(depositIntoAccountDialogLayout);
         depositIntoAccountDialogLayout.setAutoCreateGaps(true);
@@ -31,11 +31,13 @@ public class DepositIntoAccount extends JFrame
                         .addComponent(depositPrompt).addComponent(depositValue))
                 .addGroup(depositIntoAccountDialogLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(cancelButton).addComponent(confirmButton)));
+
         cancelButton.addActionListener(e ->
         {
             Bank.depositON = !Bank.depositON;
             DepositIntoAccount.this.dispose();
         });
+
         confirmButton.addActionListener(e ->
         {
             Bank.depositON = !Bank.depositON;
@@ -51,6 +53,7 @@ public class DepositIntoAccount extends JFrame
 
             DepositIntoAccount.this.dispose();
         });
+
         DepositIntoAccount.this.addWindowListener(new WindowListener()
         {
             @Override
@@ -71,8 +74,10 @@ public class DepositIntoAccount extends JFrame
             @Override
             public void windowDeactivated(WindowEvent e) {}
         });
+
         pack();
         setLocationRelativeTo(null);
+        setResizable(false);
         setVisible(true);
     }
 }

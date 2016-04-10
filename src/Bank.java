@@ -17,7 +17,7 @@ public class Bank
     static boolean openingON = false;
     static boolean closingON = false;
 
-    static String accSelectionDefault = " - Select an account - ";
+    static final String accSelectionDefault = " - Select an account - ";
     static String[] accountNumbersSet = new String[20];
     static String[] accountHoldersSet = new String[20];
     static String[] accountBalancesSet = new String[20];
@@ -71,6 +71,7 @@ public class Bank
                 }
             }
         });
+
         closeAccountButton.addActionListener(e ->
         {
             if (!closingON && chooseAccount.getSelectedItem().toString() != accSelectionDefault)
@@ -86,6 +87,7 @@ public class Bank
                 }
             }
         });
+
         depositButton.addActionListener(e ->
         {
             if (!depositON && chooseAccount.getSelectedItem().toString() != accSelectionDefault)
@@ -101,6 +103,7 @@ public class Bank
                 }
             }
         });
+
         withdrawButton.addActionListener(e ->
         {
             if (!withdrawalON && chooseAccount.getSelectedItem().toString() != accSelectionDefault)
@@ -116,6 +119,7 @@ public class Bank
                 }
             }
         });
+
         reportButton.addActionListener(e ->
         {
             if (!reportON)
@@ -131,6 +135,7 @@ public class Bank
                 }
             }
         });
+
         quitButton.addActionListener(e ->
         {
             try
@@ -144,6 +149,7 @@ public class Bank
             mainFrame.dispose();
             System.exit(0);
         });
+
         mainFrame.getContentPane().setLayout(new GridLayout(3, 2, 5, 5));
 
         mainFrame.add(openAccountButton);
@@ -165,10 +171,13 @@ public class Bank
 
     public static void RefreshDropBox() throws SQLException
     {
-
         Statement entriesNumberStatement = null;
-        String entriesNumberQuery = "select count(*) as entries_number from accounts where is_closed = 0";
+        final String entriesNumberQuery = "select count(*) as entries_number from bank.accounts where is_closed = 0";
+        Statement testStatement = null;
+        final String testQuery = "select account_id, account_number, account_holder, account_balance from bank.accounts where is_closed = 0";
         int entriesNumber = 0;
+        int simpleCounter = 1;
+
         try
         {
             entriesNumberStatement = AccountsDatabase.accountsDBConnection.createStatement();
@@ -196,15 +205,12 @@ public class Bank
         accountBalancesSet = new String[entriesNumber];
         accountIDsSet = new String[entriesNumber];
 
-        Statement testStatement = null;
-        String testQuery = "select account_id, account_number, account_holder, account_balance from accounts where is_closed = 0";
-        int simpleCounter = 1;
-
         accountNumbersSet[0] = accSelectionDefault;
         accountHoldersSet[0] = " - None selected - ";
         accountBalancesSet[0] = "";
         accountIDsSet[0] = "";
         chooseAccount.removeAllItems();
+
         try
         {
             testStatement = AccountsDatabase.accountsDBConnection.createStatement();
@@ -237,6 +243,7 @@ public class Bank
         {
             chooseAccount.addItem(accountNumbersSet[i]);
         }
+
         ActionListener accCBListener = e ->
         {
             if (chooseAccount.getSelectedIndex() > -1)
@@ -246,6 +253,7 @@ public class Bank
             }
         };
         chooseAccount.addActionListener(accCBListener);
+
         if (chooseAccount.getSelectedIndex() > 1)
         {
             chooseAccount.setSelectedIndex(1);

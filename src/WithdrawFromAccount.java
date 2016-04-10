@@ -13,7 +13,7 @@ public class WithdrawFromAccount extends JFrame
     public WithdrawFromAccount(String accountNumber, String currentBalance, int accountID) throws SQLException
     {
         super("Make a withdrawal from the account number " + accountNumber);
-        setResizable(false);
+
         GroupLayout withdrawalFromAccountDialogLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(withdrawalFromAccountDialogLayout);
         withdrawalFromAccountDialogLayout.setAutoCreateGaps(true);
@@ -31,15 +31,16 @@ public class WithdrawFromAccount extends JFrame
                         .addComponent(withdrawalPrompt).addComponent(withdrawalValue))
                 .addGroup(withdrawalFromAccountDialogLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(cancelButton).addComponent(confirmButton)));
+
         cancelButton.addActionListener(e ->
         {
             Bank.withdrawalON = !Bank.withdrawalON;
             WithdrawFromAccount.this.dispose();
         });
+
         confirmButton.addActionListener(e ->
         {
             Bank.withdrawalON = !Bank.withdrawalON;
-
             try
             {
                 Bank.accDBInstance.updateAccountBalance(accountID, String.valueOf(Float.valueOf(currentBalance) - Float.valueOf(withdrawalValue.getText())));
@@ -51,6 +52,7 @@ public class WithdrawFromAccount extends JFrame
             }
             WithdrawFromAccount.this.dispose();
         });
+
         WithdrawFromAccount.this.addWindowListener(new WindowListener()
         {
             @Override
@@ -71,8 +73,10 @@ public class WithdrawFromAccount extends JFrame
             @Override
             public void windowDeactivated(WindowEvent e) {}
         });
+
         pack();
         setLocationRelativeTo(null);
+        setResizable(false);
         setVisible(true);
     }
 }

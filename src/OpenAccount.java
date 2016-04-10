@@ -17,7 +17,7 @@ public class OpenAccount extends JFrame
     public OpenAccount() throws SQLException
     {
         super("Open account...");
-        setResizable(false);
+
         GroupLayout openAccountDialogLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(openAccountDialogLayout);
         openAccountDialogLayout.setAutoCreateGaps(true);
@@ -45,15 +45,16 @@ public class OpenAccount extends JFrame
                 .addComponent(accountInitialBalancePrompt).addComponent(accountInitialBalance))
             .addGroup(openAccountDialogLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(cancelButton).addComponent(confirmButton)));
+
         cancelButton.addActionListener(e ->
         {
             Bank.openingON = !Bank.openingON;
             OpenAccount.this.dispose();
         });
+
         confirmButton.addActionListener(e ->
         {
             Bank.openingON = !Bank.openingON;
-
             try
             {
                 Bank.accDBInstance.OpenAccount(accountNumberValue.getText(), accountHolderValue.getText(), accountInitialBalance.getText());
@@ -65,6 +66,7 @@ public class OpenAccount extends JFrame
             }
             OpenAccount.this.dispose();
         });
+
         OpenAccount.this.addWindowListener(new WindowListener()
         {
             @Override
@@ -85,8 +87,10 @@ public class OpenAccount extends JFrame
             @Override
             public void windowDeactivated(WindowEvent e) {}
         });
+
         pack();
         setLocationRelativeTo(null);
+        setResizable(false);
         setVisible(true);
     }
 }

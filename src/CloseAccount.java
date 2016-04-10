@@ -12,7 +12,7 @@ public class CloseAccount extends JFrame
     public CloseAccount(String accountNumber, int accountID) throws SQLException
     {
         super("Closing the account number " + accountNumber);
-        setResizable(false);
+
         GroupLayout withdrawalFromAccountDialogLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(withdrawalFromAccountDialogLayout);
         withdrawalFromAccountDialogLayout.setAutoCreateGaps(true);
@@ -29,15 +29,16 @@ public class CloseAccount extends JFrame
                         .addComponent(closePrompt))
                 .addGroup(withdrawalFromAccountDialogLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(cancelButton).addComponent(confirmButton)));
+
         cancelButton.addActionListener(e ->
         {
             Bank.closingON = !Bank.closingON;
             CloseAccount.this.dispose();
         });
+
         confirmButton.addActionListener(e ->
         {
             Bank.closingON = !Bank.closingON;
-
             try
             {
                 Bank.accDBInstance.CloseAccount(accountID);
@@ -49,6 +50,7 @@ public class CloseAccount extends JFrame
             }
             CloseAccount.this.dispose();
         });
+
         CloseAccount.this.addWindowListener(new WindowListener()
         {
             @Override
@@ -69,8 +71,10 @@ public class CloseAccount extends JFrame
             @Override
             public void windowDeactivated(WindowEvent e) {}
         });
+
         pack();
         setLocationRelativeTo(null);
+        setResizable(false);
         setVisible(true);
     }
 }

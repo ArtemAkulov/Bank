@@ -15,20 +15,19 @@ public class AccountsReport extends JFrame
     public AccountsReport() throws SQLException
     {
         super("Report on all accounts");
-        setResizable(false);
 
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+        Statement reportStatement = null;
+        Statement entriesNumberStatement = null;
+        final String entriesNumberQuery = "select account_id from bank.accounts order by account_id desc limit 1";
+        final String reportQuery = "select account_number, account_holder, account_balance, date_opened, is_closed from bank.accounts";
+        String activeAccountString;
+        int entriesNumber = 0;
+
         accountsTableModel.addColumn("Account number");
         accountsTableModel.addColumn("Account holder");
         accountsTableModel.addColumn("Date of opening");
         accountsTableModel.addColumn("Account balance");
         accountsTableModel.addColumn("Active");
-
-        Statement reportStatement = null;
-        Statement entriesNumberStatement = null;
-        String entriesNumberQuery = "select account_id from accounts order by account_id desc limit 1";
-        String reportQuery = "select account_number, account_holder, account_balance, date_opened, is_closed from accounts";
-        int entriesNumber = 0;
 
         try
         {
@@ -58,7 +57,8 @@ public class AccountsReport extends JFrame
             for (int i = 1; i <= entriesNumber; i ++)
             {
                 reportResultSet.next();
-                accountsTableModel.addRow(new Object[]{reportResultSet.getString("account_number"), reportResultSet.getString("account_holder"), reportResultSet.getString("date_opened"), reportResultSet.getString("account_balance"), reportResultSet.getString("is_closed")});
+                activeAccountString = (reportResultSet.getString("is_closed").charAt(0) == '1') ? "No" : "Yes";
+                accountsTableModel.addRow(new Object[]{reportResultSet.getString("account_number"), reportResultSet.getString("account_holder"), reportResultSet.getString("date_opened"), reportResultSet.getString("account_balance"), activeAccountString});
             }
         }
         catch (SQLException e)
@@ -74,15 +74,16 @@ public class AccountsReport extends JFrame
         }
 
         getContentPane().add(new JScrollPane(testTable));
-
         testTable.setFillsViewportHeight(true);
         closeWindowButton.setAlignmentX(10);
+
         getContentPane().add(closeWindowButton);
         closeWindowButton.addActionListener(e ->
         {
             Bank.reportON = !Bank.reportON;
             AccountsReport.this.dispose();
         });
+
         AccountsReport.this.addWindowListener(new WindowListener()
         {
             @Override
@@ -103,6 +104,9 @@ public class AccountsReport extends JFrame
             @Override
             public void windowDeactivated(WindowEvent e) {}
         });
+
+        setResizable(false);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         AccountsReport.this.setSize(800, 600);
         setLocationRelativeTo(null);
         setVisible(true);

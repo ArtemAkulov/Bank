@@ -3,17 +3,35 @@ import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import javax.swing.*;
 
-public class DepositIntoAccount extends JFrame
+/**
+ * DepositIntoAccount class manages adding some amount to an account balance.
+ *
+ */
+class DepositIntoAccount extends JFrame
 {
-    JLabel depositPrompt = new JLabel("Enter the amount to deposit");
-    JTextField depositValue = new JTextField("", 25);
-    JButton cancelButton = new JButton("Cancel");
-    JButton confirmButton = new JButton("Confirm");
+    private static final long serialVersionUID = 1L;
+    private JLabel depositPrompt = new JLabel("Enter the amount to deposit");
+    private JTextField depositValue = new JTextField("", 25);
+    private JButton cancelButton = new JButton("Cancel");
+    private JButton confirmButton = new JButton("Confirm");
 
-    public DepositIntoAccount(String accountNumber, String currentBalance, int accountID) throws SQLException
+    /**
+     * The constructor method for the class.
+     * @param accountNumber is passed to the method in order to construct the frame title mentioning the account number.
+     */
+    DepositIntoAccount(String accountNumber)
     {
         super("Make a deposit into the account number " + accountNumber);
+    }
 
+    /**
+     *
+     * @param currentBalance current balance deposited by the accountHolder
+     * @param accountID a unique identifier of each accountNumber
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    void DepositStartUp(String currentBalance, int accountID) throws SQLException
+    {
         GroupLayout depositIntoAccountDialogLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(depositIntoAccountDialogLayout);
         depositIntoAccountDialogLayout.setAutoCreateGaps(true);
@@ -43,12 +61,22 @@ public class DepositIntoAccount extends JFrame
             Bank.depositON = !Bank.depositON;
             try
             {
+                Float.parseFloat(depositValue.getText());
+            }
+            catch (Exception floatException)
+            {
+                ExceptionHandler oops = new ExceptionHandler();
+                oops.ExceptionHandlerStartUp("The value is not of the float type");
+            }
+            try
+            {
                 Bank.accDBInstance.updateAccountBalance(accountID, String.valueOf(Float.valueOf(depositValue.getText()) + Float.valueOf(currentBalance)));
                 Bank.RefreshDropBox();
             }
             catch (SQLException e1)
             {
-                e1.printStackTrace();
+                ExceptionHandler oops = new ExceptionHandler();
+                oops.ExceptionHandlerStartUp("SQL Exception");
             }
 
             DepositIntoAccount.this.dispose();
@@ -81,3 +109,4 @@ public class DepositIntoAccount extends JFrame
         setVisible(true);
     }
 }
+

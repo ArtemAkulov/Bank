@@ -1,14 +1,35 @@
+import java.io.FileInputStream;
 import java.sql.*;
+import java.util.Properties;
 
-public class AccountsDatabase
+/**
+ *
+ * AccountsDatabase class holds access to the database of the bank account information. This is accessed when:
+ *  <ul>
+ * <li>Opening Account(s)
+ * <li>Updating Account(s)
+ * <li>Listing Account(s)
+ * <li>Closing Account(s)
+ * </ul>
+ *
+ */
+class AccountsDatabase
 {
-    static final String driverJDBC = "com.mysql.jdbc.Driver";
-    static final String addressDB = "jdbc:mysql://localhost:3306?autoReconnect=true&useSSL=false";
-    static final String userName = "root";
-    static final String passWord = "dahlia";
+    /**
+     * Represents the connection to the mysql database called "bank".
+     *
+     */
     static Connection accountsDBConnection = null;
 
-    public AccountsDatabase() throws SQLException
+    /**
+     *
+     * AccountsDatabase method will check if an existing database already exists.
+     * If the a database is not found, a new database will be created and populated.
+     *
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     *
+     */
+    AccountsDatabase() throws SQLException
     {
         Connect2DB();
         if (!CheckIfDBExists())
@@ -18,6 +39,12 @@ public class AccountsDatabase
         }
     }
 
+    /**
+     *
+     * @return dbExists will display 'true' or 'false' value if the Database Exists.
+     * If there's already a database, this method will simply be closed.
+     * @throws SQLException If there's a database access error, an SQLException will be thrown
+     */
     private boolean CheckIfDBExists() throws SQLException
     {
         Statement existenceStatement = null;
@@ -28,12 +55,12 @@ public class AccountsDatabase
             existenceStatement = AccountsDatabase.accountsDBConnection.createStatement();
             ResultSet existenceResultSet = existenceStatement.executeQuery(existenceQuery);
             existenceResultSet.next();
-            boolean dbExists = existenceResultSet.getInt("db_exists") > 0;
-            return dbExists;
+            return existenceResultSet.getInt("db_exists") > 0;
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -45,6 +72,11 @@ public class AccountsDatabase
         return false;
     }
 
+    /**
+     * A new database will be created when there's no existing database.
+     * If there's already a database, this method will simply be closed.
+     * @throws SQLException If there's a database access error, an SQLException will be thrown
+     */
     private void CreateDB() throws SQLException
     {
         Statement createDBStatement = null;
@@ -57,7 +89,8 @@ public class AccountsDatabase
         }
         catch (SQLException e)
         {
-
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -68,6 +101,10 @@ public class AccountsDatabase
         }
     }
 
+    /**
+     * Will populate the table in the database created.
+     * @throws SQLException If there's a database access error, an SQLException will be thrown
+     */
     private void PopulateDB() throws SQLException
     {
         Statement createTableStatement = null;
@@ -80,7 +117,8 @@ public class AccountsDatabase
         }
         catch (SQLException e)
         {
-
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -91,8 +129,36 @@ public class AccountsDatabase
         }
     }
 
+    /**
+     * Details the driver needed for the SQL connection. Also includes the credentials used to access SQL server.
+     * @throws SQLException If the driver is not found and the credentials declared are incorrect, an SQLException will be thrown.
+     */
     private void Connect2DB() throws SQLException
     {
+        String driverJDBC;
+        String addressDB;
+        String userName;
+        String passWord;
+
+        try
+        {
+            Properties iniFile = new Properties();
+            iniFile.load(new FileInputStream("resources/bank.init"));
+            driverJDBC = iniFile.getProperty("driver");
+            addressDB = iniFile.getProperty("address");
+            userName = iniFile.getProperty("username");
+            passWord = iniFile.getProperty("password");
+        }
+        catch (Exception e)
+        {
+            driverJDBC = "com.mysql.jdbc.Driver";
+            addressDB = "jdbc:mysql://localhost:3306?autoReconnect=true&useSSL=false";
+            userName = "root";
+            passWord = "test1234";
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("Could not read INI file");
+        }
+
         try
         {
             Class.forName(driverJDBC);
@@ -100,15 +166,24 @@ public class AccountsDatabase
         }
         catch(SQLException se)
         {
-            se.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("General exception");
         }
     }
 
-    public void OpenAccount(String accountNumber, String accountHolder, String initialBalance) throws SQLException
+    /**
+     * Details the String used to open account.
+     ** @param accountNumber numeric identifier for ownership of an account     *
+     * @param accountHolder an individual who is legally responsible for all transactions made on the account
+     * @param initialBalance opening amount deposited by the accountHolder
+     * @throws SQLException If there's a database access error, an SQLException will be thrown
+     */
+    void OpenAccount(String accountNumber, String accountHolder, String initialBalance) throws SQLException
     {
         Statement openStatement = null;
         Statement prepareIDStatement = null;
@@ -131,7 +206,8 @@ public class AccountsDatabase
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -148,7 +224,8 @@ public class AccountsDatabase
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -159,7 +236,12 @@ public class AccountsDatabase
         }
     }
 
-    public void CloseAccount(int accountID) throws SQLException
+    /**
+     * Details the String used to close an account
+     * @param accountID a unique identifier of each accountNumber
+     * @throws SQLException If there's a database access error, an SQLException will be thrown
+     */
+    void CloseAccount(int accountID) throws SQLException
     {
         Statement updateStatement = null;
         String updateQuery = "update bank.accounts set is_closed = 1 where account_id = " + String.valueOf(accountID);
@@ -171,7 +253,8 @@ public class AccountsDatabase
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -182,7 +265,13 @@ public class AccountsDatabase
         }
     }
 
-    public void updateAccountBalance(int accountID, String updatedBalance) throws SQLException
+    /**
+     * Details string when updating Account Balance
+     * @param accountID a unique identifier of each accountNumber
+     * @param updatedBalance updated balance of the accountHolder
+     * @throws SQLException If there's a database access error, an SQLException will be thrown
+     */
+    void updateAccountBalance(int accountID, String updatedBalance) throws SQLException
     {
         Statement updateStatement = null;
         String updateQuery = "update bank.accounts set account_balance = " + updatedBalance + " where account_id = " + String.valueOf(accountID);
@@ -194,7 +283,8 @@ public class AccountsDatabase
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -205,7 +295,11 @@ public class AccountsDatabase
         }
     }
 
-    public void CleanUp() throws SQLException
+    /**
+     * Method called prior to quitting the program to close the connection to DB.
+     * @throws SQLException If there's a database access error, an SQLException will be thrown
+     */
+    void CleanUp() throws SQLException
     {
         try
         {
@@ -213,7 +307,8 @@ public class AccountsDatabase
         }
         catch(SQLException se)
         {
-            se.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
     }
 }

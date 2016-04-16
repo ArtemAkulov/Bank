@@ -3,17 +3,36 @@ import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import javax.swing.*;
 
-public class WithdrawFromAccount extends JFrame
+/**
+ * The WithDrawFromAccount class is used to provide user with an option to take
+ */
+class WithdrawFromAccount extends JFrame
 {
-    JLabel withdrawalPrompt = new JLabel("Enter the amount to withdraw");
-    JTextField withdrawalValue = new JTextField("", 25);
-    JButton cancelButton = new JButton("Cancel");
-    JButton confirmButton = new JButton("Confirm");
+    private static final long serialVersionUID = 1L;
+    private JLabel withdrawalPrompt = new JLabel("Enter the amount to withdraw");
+    private JTextField withdrawalValue = new JTextField("", 25);
+    private JButton cancelButton = new JButton("Cancel");
+    private JButton confirmButton = new JButton("Confirm");
 
-    public WithdrawFromAccount(String accountNumber, String currentBalance, int accountID) throws SQLException
+    /**
+     *
+     * @param accountNumber The constructor method for this class is provided with an account number.
+     *                      It is used to form the frame title.
+     */
+    WithdrawFromAccount(String accountNumber)
     {
         super("Make a withdrawal from the account number " + accountNumber);
+    }
 
+    /**
+     *
+     * @param currentBalance The method is provided with the stored value of the account balance.
+     *                       It is used to get the balance after withdrawal by subtracting the withdrawal amount from it.
+     * @param accountID An account primary key value is also provided to the method as the means to construct a relevant SQL update query.
+     * @throws SQLException The method can throw SQLException while updating the table.
+     */
+    void WithdrawalStartUp(String currentBalance, int accountID) throws SQLException
+    {
         GroupLayout withdrawalFromAccountDialogLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(withdrawalFromAccountDialogLayout);
         withdrawalFromAccountDialogLayout.setAutoCreateGaps(true);
@@ -48,7 +67,8 @@ public class WithdrawFromAccount extends JFrame
             }
             catch (SQLException e1)
             {
-                e1.printStackTrace();
+                ExceptionHandler oops = new ExceptionHandler();
+                oops.ExceptionHandlerStartUp("SQL Exception");
             }
             WithdrawFromAccount.this.dispose();
         });
@@ -80,3 +100,4 @@ public class WithdrawFromAccount extends JFrame
         setVisible(true);
     }
 }
+

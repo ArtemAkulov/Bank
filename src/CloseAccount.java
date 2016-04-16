@@ -3,15 +3,35 @@ import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import javax.swing.*;
 
-public class CloseAccount extends JFrame
+/**
+ *
+ * CloseAccount class manages marking an account as non-active in the database.
+ *
+ */
+class CloseAccount extends JFrame
 {
-    JLabel closePrompt = new JLabel("Are you certain?                                                                ");
-    JButton cancelButton = new JButton("Cancel");
-    JButton confirmButton = new JButton("Confirm");
+    private static final long serialVersionUID = 1L;
+    private JLabel closePrompt = new JLabel();
+    private JButton cancelButton = new JButton("Cancel");
+    private JButton confirmButton = new JButton("Confirm");
 
-    public CloseAccount(String accountNumber, int accountID) throws SQLException
+    /**
+     * The constructor method creating a JFrame and assigning a title to it.
+     */
+    CloseAccount()
     {
-        super("Closing the account number " + accountNumber);
+        super("Close account...");
+    }
+
+    /**
+     *
+     * @param accountNumber numeric identifier for ownership of an account presented to the method as a String value.
+     * @param accountID a unique identifier of each accountNumber
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    void CloseStartUp(String accountNumber, int accountID) throws SQLException
+    {
+        closePrompt.setText("This will close the account number " + accountNumber + ". Are you certain?");
 
         GroupLayout withdrawalFromAccountDialogLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(withdrawalFromAccountDialogLayout);
@@ -46,7 +66,8 @@ public class CloseAccount extends JFrame
             }
             catch (SQLException e1)
             {
-                e1.printStackTrace();
+                ExceptionHandler oops = new ExceptionHandler();
+                oops.ExceptionHandlerStartUp("SQL Exception");
             }
             CloseAccount.this.dispose();
         });
@@ -78,3 +99,4 @@ public class CloseAccount extends JFrame
         setVisible(true);
     }
 }
+

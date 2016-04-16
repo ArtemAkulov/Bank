@@ -6,28 +6,45 @@ import java.sql.Statement;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class AccountsReport extends JFrame
+/**
+ * The AccountsReport class constructs full report on all the accounts in the system regardless of their status.
+ * It is, due to the nature of the assignment, highly independent of the rest of the classes and contacts database directly.
+ */
+class AccountsReport extends JFrame
 {
-    JButton closeWindowButton = new JButton("CLOSE");
-    DefaultTableModel accountsTableModel = new DefaultTableModel();
-    JTable testTable = new JTable(accountsTableModel);
+    private static final long serialVersionUID = 1L;
+    private JButton closeWindowButton = new JButton("Close report");
+    private DefaultTableModel accountsTableModel = new DefaultTableModel(new Object[][][][][]{},new String[]{"Account number","Account holder","Date of opening", "Account balance", "Active"});
+    private JTable reportTable = new JTable(accountsTableModel);
 
-    public AccountsReport() throws SQLException
+    /**
+     * The constructor method for the report.
+     */
+    AccountsReport()
     {
         super("Report on all accounts");
+    }
 
+    /**
+     * A query is made on the bank database and will display in a table format the following details:
+     * 	Account number
+     *	Account holder
+     *	date of opening
+     * 	account balance
+     * 	Active
+     *
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     * @throws SQLException Due to the fact that the class contacts the database directly the method can throw SQLException.
+     * The method constructs the frame with the table containing all the current data on all accounts.
+     */
+    void ReportStartUp() throws SQLException
+    {
         Statement reportStatement = null;
         Statement entriesNumberStatement = null;
         final String entriesNumberQuery = "select account_id from bank.accounts order by account_id desc limit 1";
         final String reportQuery = "select account_number, account_holder, account_balance, date_opened, is_closed from bank.accounts";
         String activeAccountString;
         int entriesNumber = 0;
-
-        accountsTableModel.addColumn("Account number");
-        accountsTableModel.addColumn("Account holder");
-        accountsTableModel.addColumn("Date of opening");
-        accountsTableModel.addColumn("Account balance");
-        accountsTableModel.addColumn("Active");
 
         try
         {
@@ -40,7 +57,8 @@ public class AccountsReport extends JFrame
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -63,7 +81,8 @@ public class AccountsReport extends JFrame
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            ExceptionHandler oops = new ExceptionHandler();
+            oops.ExceptionHandlerStartUp("SQL Exception");
         }
         finally
         {
@@ -73,11 +92,10 @@ public class AccountsReport extends JFrame
             }
         }
 
-        getContentPane().add(new JScrollPane(testTable));
-        testTable.setFillsViewportHeight(true);
-        closeWindowButton.setAlignmentX(10);
-
+        JScrollPane reportTableSP = new JScrollPane(reportTable);
+        getContentPane().add(reportTableSP);
         getContentPane().add(closeWindowButton);
+        closeWindowButton.setAlignmentX(CENTER_ALIGNMENT);
         closeWindowButton.addActionListener(e ->
         {
             Bank.reportON = !Bank.reportON;
@@ -105,10 +123,11 @@ public class AccountsReport extends JFrame
             public void windowDeactivated(WindowEvent e) {}
         });
 
-        setResizable(false);
+        setResizable(true);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-        AccountsReport.this.setSize(800, 600);
         setLocationRelativeTo(null);
         setVisible(true);
+        AccountsReport.this.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
     }
 }
+
